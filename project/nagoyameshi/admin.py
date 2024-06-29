@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExtendedModel, Category, Day, Restaurant
+from .models import ExtendedModel, Category, Day, Restaurant, Review
 
 admin.site.register(ExtendedModel)
 admin.site.register(Day)
@@ -21,3 +21,10 @@ class RestaurantAdmin(admin.ModelAdmin):
         return "\n".join([day.name for day in obj.regular_closing_day.all()])
 
 admin.site.register(Restaurant, RestaurantAdmin)
+
+# レビュー
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('restaurant_id', 'user_id', 'comment', 'deleted_at', 'updated_at', 'created_at')
+    list_filter = ('restaurant_id', 'user_id')
+
+admin.site.register(Review, ReviewAdmin)

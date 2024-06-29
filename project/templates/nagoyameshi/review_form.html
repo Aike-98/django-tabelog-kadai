@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% block title %}レビュー投稿フォーム{% endblock %}
+
+{% block content %}
+<h2>{{ restaurant.name }}へのレビュー</h2>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="投稿">
+</form>
+
+{% endblock %}

@@ -1,4 +1,9 @@
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+User = get_user_model()
+from django.core.validators import MinValueValidator,MaxValueValidator
 
 # models.Modelを継承した汎用クラス
 class ExtendedModel(models.Model):
@@ -41,3 +46,15 @@ class Restaurant(ExtendedModel):
     
     def get_regular_closing_day(self):
         return "\n".join([day.name for day in self.regular_closing_day.all()])
+
+
+# レビュー
+MAX_STAR = 5
+class Review(ExtendedModel):
+    restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
+    #user_id = models.ForeignKey(User, verbose_name='投稿者', on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+    number_of_stars = models.PositiveIntegerField(verbose_name='星の数', validators=[MinValueValidator(1),MaxValueValidator(MAX_STAR)],default=1)
+    comment = models.CharField(verbose_name='コメント', max_length=800)
+    visited_date = models.DateField(verbose_name='利用日')
+

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% block title %}{{ restaurant.name }}へのレビュー{% endblock %}
+
+{% block content %}
+<h2>{{ restaurant.name }}へのレビュー一覧</h2>
+
+
+<a href="{% url 'nagoyameshi:review_form' pk=restaurant.pk %}">レビューを投稿する</a>
+
+<ul>
+{{review_list}}
+{% for review in review_list %}
+    <li>{{ review.comment }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

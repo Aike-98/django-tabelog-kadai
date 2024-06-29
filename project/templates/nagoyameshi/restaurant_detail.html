@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{{restaurant.name}} - NAGOYAMESHI{% endblock %}
+{% load bootstrap %}
+{% block title %}{{restaurant.name}}{% endblock %}
 
 {% block content %}
 <h1>{{restaurant.name}}</h1>
 
 {{restaurant.description}}
-
-
+<br>
+<a href="{% url 'nagoyameshi:review_list' pk=restaurant.pk %}">レビューを見る</a>
 
 {% endblock %}

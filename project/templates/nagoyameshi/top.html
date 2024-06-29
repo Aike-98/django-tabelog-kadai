@@ -1,15 +1,10 @@
 {% extends "base.html" %}
-{% block title %}店舗一覧 - NAGOYAMESHI{% endblock %}
+{% block title %}店舗一覧{% endblock %}
 
 {% block content %}
 <h1>店舗一覧</h1>
 
-{# 検索フォーム #}
-<form action="" method="GET">
-    {% csrf_token %}
-    <input type="text" name="keyword" value="{{ request.GET.keyword }}">
-    <button type="sumit">検索</button>
-</form>
+
 
 
 
