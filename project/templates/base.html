@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ja">
     <head>
@@ -5,14 +7,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}{% endblock %} - NAGOYAMESHI</title>
         
+        {# cdn読み込み #}
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous" defer></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" type="text/css">
+    
+        {# css読み込み #}
+        <link rel="stylesheet" href="{% static 'nagoyameshi/css/style.css' %}">
+
+        {% block head %}{% endblock %}
     </head>
 
     <body>
         <header style="background-color:gray;">
 
-            <h3>NAGOYAMESHI</h3>
+            <a href="{% url 'nagoyameshi:top'%}">NAGOYAMESHI</a>
 
             {# 検索フォーム #}
             <form action="{% url 'nagoyameshi:top' %}" method="GET">
@@ -28,24 +37,36 @@
                 <button type="sumit">検索</button>
             </form>
 
-            {# ユーザー名とログイン/ログアウトボタン #}
-            {% if user.username %}
-                {# ログイン済みの場合 #}
-                <span>{{ user.username }}さん</span>
-                <form action="{% url 'logout' %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit">ログアウト</button>
-                </form>
-            {% else %}
-                {# ログインしていない場合 #}
-                <a href="{% url 'signup' %}">会員登録</a>
-                <a href="{% url 'login' %}">ログイン</a>
-            {% endif %}
+            <div>
+                {# ユーザー名とログイン/ログアウトボタン #}
+                {% if request.user.is_authenticated %}
+                    {# ログイン済みの場合 #}
+                    <a href="{% url 'nagoyameshi:mypage' %}">{{ user.username }}さん</a>
+                    <a href="{% url 'nagoyameshi:mypage' %}">マイページ</a>
+                    <form action="{% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit">ログアウト</button>
+                    </form>
+                {% else %}
+                    {# ログインしていない場合 #}
+                    <a href="{% url 'signup' %}">会員登録</a>
+                    <a href="{% url 'login' %}">ログイン</a>
+                {% endif %}
+            </div>
 
-        
         </header>
 
         <main>
+            {# メッセージ欄 #}
+            <div class="message_field">
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="bg-{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
             {% block content %}{% endblock %}
         </main>
 

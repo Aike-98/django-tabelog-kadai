@@ -4,6 +4,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
+from django.core.validators import RegexValidator, MaxValueValidator
 
 import uuid
 
@@ -33,11 +34,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     email_verified_at = models.DateTimeField(_('email verified at'), blank=True, null=True)
 
-    phone_number = models.CharField(_('phone number'), max_length=11, blank=True, null=True)
+    phone_number_regex = RegexValidator(regex=r'^[0-9]{10,11}$')
+    phone_number = models.CharField(_('phone number'), max_length=11, blank=True, null=True, validators=[phone_number_regex])
 
-    age = models.PositiveIntegerField(_('age'), blank=True, null=True)
+    age = models.PositiveIntegerField(_('age'), blank=True, null=True, validators=[MaxValueValidator(110)])
 
-    customer_id = models.CharField(_('costomer id'), max_length=150, blank=True, null=True)
+    customer_id = models.CharField(_('customer id'), max_length=150, blank=True, null=True)
 
 
     is_staff    = models.BooleanField(

@@ -9,7 +9,6 @@
 <a href="{% url 'nagoyameshi:review_form' pk=restaurant.pk %}">レビューを投稿する</a>
 
 <ul>
-{{review_list}}
 {% for review in review_list %}
     <li>{{ review.comment }}</li>
 {% endfor %}

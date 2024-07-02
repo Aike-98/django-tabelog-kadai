@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.core.validators import MinValueValidator,MaxValueValidator
@@ -35,10 +36,16 @@ class Restaurant(ExtendedModel):
     maximum_price = models.PositiveIntegerField(verbose_name='上限価格')
     opening_time = models.TimeField(verbose_name='開店時刻')
     closing_time = models.TimeField(verbose_name='閉店時刻')
-    postal_code = models.CharField(verbose_name='郵便番号', max_length=8)
+
+    postal_code_regex = RegexValidator(regex=r'^[0-9]{3}-[0-9]{4}$')
+    postal_code = models.CharField(verbose_name='郵便番号', max_length=8, validators=[postal_code_regex])
+
     city = models.CharField(verbose_name='市区町村', max_length=50)
     street_address = models.CharField(verbose_name='番地以降住所', max_length=50)
-    phone_number = models.CharField(verbose_name='電話番号', max_length=11)
+
+    phone_number_regex = RegexValidator(regex=r'^[0-9]{10,11}$')
+    phone_number = models.CharField(verbose_name='電話番号', max_length=11, validators=[phone_number_regex])
+
     regular_closing_day = models.ManyToManyField(Day, verbose_name='定休日')
 
     def __str__(self):
@@ -52,9 +59,18 @@ class Restaurant(ExtendedModel):
 MAX_STAR = 5
 class Review(ExtendedModel):
     restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
-    #user_id = models.ForeignKey(User, verbose_name='投稿者', on_delete=models.CASCADE)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
     number_of_stars = models.PositiveIntegerField(verbose_name='星の数', validators=[MinValueValidator(1),MaxValueValidator(MAX_STAR)],default=1)
     comment = models.CharField(verbose_name='コメント', max_length=800)
     visited_date = models.DateField(verbose_name='利用日')
+
+
+# お気に入り
+class Favorite(models.Model):
+    class Meta:
+        unique_together=("user_id","restaurant_id")
+
+    restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+
 

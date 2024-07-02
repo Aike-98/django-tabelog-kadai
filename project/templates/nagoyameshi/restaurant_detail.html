@@ -5,7 +5,23 @@
 {% block content %}
 <h1>{{restaurant.name}}</h1>
 
+{# お気に入りボタン #}
+<form action="" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-light btn-lg">
+        {% if favorite %}
+        <span class="text-warning"><i class="fa-solid fa-star"></i></span>
+        {% else %}
+        <span class="text-muted"><i class="fa-solid fa-star"></i></span>
+        {% endif %}
+    </button>
+</form>
+
 {{restaurant.description}}
+<br>
+
+
+
 <br>
 <a href="{% url 'nagoyameshi:review_list' pk=restaurant.pk %}">レビューを見る</a>
 

@@ -1,12 +1,35 @@
 {% extends "base.html" %}
 {% load bootstrap %}
+{% load static %}
 {% block title %}レビュー投稿フォーム{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'nagoyameshi/css/star_radio.css' %}">
+{% endblock %}
 
 {% block content %}
 <h2>{{ restaurant.name }}へのレビュー</h2>
 <form action="" method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    {# 星のラジオボタン #}
+    <input type="radio" id="star_radio_1" name="number_of_stars" value="1">
+    <input type="radio" id="star_radio_2" name="number_of_stars" value="2">
+    <input type="radio" id="star_radio_3" name="number_of_stars" value="3">
+    <input type="radio" id="star_radio_4" name="number_of_stars" value="4">
+    <input type="radio" id="star_radio_5" name="number_of_stars" value="5">
+
+    <label for="star_radio_5" class="star_radio_label"><div class="true_star text-warning"><i class="fa-solid fa-star"></i></div><div class="false_star text-muted"><i class="fa-solid fa-star"></i></div></label>
+    <label for="star_radio_4" class="star_radio_label"><div class="true_star text-warning"><i class="fa-solid fa-star"></i></div><div class="false_star text-muted"><i class="fa-solid fa-star"></i></div></label>
+    <label for="star_radio_3" class="star_radio_label"><div class="true_star text-warning"><i class="fa-solid fa-star"></i></div><div class="false_star text-muted"><i class="fa-solid fa-star"></i></div></label>
+    <label for="star_radio_2" class="star_radio_label"><div class="true_star text-warning"><i class="fa-solid fa-star"></i></div><div class="false_star text-muted"><i class="fa-solid fa-star"></i></div></label>
+    <label for="star_radio_1" class="star_radio_label"><div class="true_star text-warning"><i class="fa-solid fa-star"></i></div><div class="false_star text-muted"><i class="fa-solid fa-star"></i></div></label>
+
+
+
+
+
+    <input type="text" name="comment" max="800">
+    <input type="date" name="visited_date">
     <input type="submit" value="投稿">
 </form>
 
