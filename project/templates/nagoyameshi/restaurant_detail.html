@@ -10,9 +10,9 @@
     {% csrf_token %}
     <button type="submit" class="btn btn-light btn-lg">
         {% if favorite %}
-        <span class="text-warning"><i class="fa-solid fa-star"></i></span>
+        お気に入りに登録中<span class="text-danger"><i class="fa-solid fa-heart"></i></span>
         {% else %}
-        <span class="text-muted"><i class="fa-solid fa-star"></i></span>
+        お気に入りに未登録<span class="text-muted"><i class="fa-solid fa-heart"></i></span>
         {% endif %}
     </button>
 </form>
@@ -24,5 +24,6 @@
 
 <br>
 <a href="{% url 'nagoyameshi:review_list' pk=restaurant.pk %}">レビューを見る</a>
+<a href="{% url 'nagoyameshi:reservation_form' pk=restaurant.pk %}">予約する</a>
 
 {% endblock %}

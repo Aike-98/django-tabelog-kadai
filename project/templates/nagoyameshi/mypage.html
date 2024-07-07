@@ -20,18 +20,91 @@
 
 <section>
     <h3>予約一覧</h3>
+    {% if reservations %}
+        <table border="2">
+ 
+            <tr>
+                <th>店舗</th>
+                <th>予約日時</th>
+                <th>予約人数</th>
+                <th>共有事項</th>
+                <th>操作</th>
+            </tr>
+
+        {% for reservation in reservations %}
+            <tr>
+                <td>{{reservation.restaurant_id.name}}</td>
+                <td>{{reservation.reservation_datetime}}</td>
+                <td>{{reservation.number_of_persons}}</td>
+                <td>{{reservation.comment}}</td>
+                <td><a href="">取り消し</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>予約情報はまだありません。</p>
+    {% endif %}
 </section>
 
 <section>
     <h3>会員情報</h3>
-    {{user.username}}
-    {{user.email}}
+    <table>
+        <tr>
+            <td>ニックネーム</td>
+            <td>{{user.username}}</td>
+        </tr>
+
+        <tr>
+            <td>メールアドレス</td>
+            <td>{{user.email}}</td>
+        </tr>
+
+        <tr>
+            <td>氏名</td>
+            <td>
+                {% if user.last_name and user.first_name %}
+                    {{user.last_name}} {{user.first_name}}
+                {% else %}
+                    未登録
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>電話番号</td>
+            <td>
+                {% if user.phone_number %}
+                    {{user.phone_number}}
+                {% else %}
+                    未登録
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>年齢</td>
+            <td>
+                {% if age %}
+                    {{user.age}}
+                {% else %}
+                    未登録
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    
 
     <a href="">編集</a>
 </section>
 
 <section>
     <h3>有料会員登録</h3>
+    <p>有料会員特典</p>
+    <ul>
+        <li>予約機能</li>
+        <li>レビュー投稿機能</li>
+    </ul>
+    <a href="">有料会員になる</a>
 </section>
 
 <section>

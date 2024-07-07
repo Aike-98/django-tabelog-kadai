@@ -26,15 +26,17 @@
             {# 検索フォーム #}
             <form action="{% url 'nagoyameshi:top' %}" method="GET">
 
-                <select name="category" id="">
+                <select name="category" id="" value="{{ request.GET.category }}">
                     <option value="">全て</option>
                     {% for category in CATEGORIES_LIST %}
-                        <option value="{{ category.pk }}">{{category.name}}</option>
+                        <option value="{{ category.name }}" {% if category.name == request.GET.category %}selected{% endif%}>
+                            {{category.name}}
+                        </option>
                     {% endfor %}
                 </select>
 
                 <input type="text" name="keyword" value="{{ request.GET.keyword }}">
-                <button type="sumit">検索</button>
+                <button type="submit">検索</button>
             </form>
 
             <div>
@@ -58,20 +60,26 @@
 
         <main>
             {# メッセージ欄 #}
-            <div class="message_field">
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li{% if message.tags %} class="bg-{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endfor %}
-                </ul>
+            <div class="notify_message_area">
+                {% for message in messages %}
+                <div class="notify_message notify_message_{{ message.tags }}">
+                        <div class="notify_message_content">{{ message }}</div>
+                        <div class="notify_message_delete"><i class="fas fa-times"></i></div>
+                </div>
+                {% endfor %}
             </div>
 
-
+            {# 各ページのコンテンツ #}
             {% block content %}{% endblock %}
+            
+
         </main>
 
         <footer>
 
         </footer>
+
+        {# JavaScriptの読み込み #}
+        <script src="{% static 'nagoyameshi/js/script.js' %}"></script>
     </body>
 </html>
