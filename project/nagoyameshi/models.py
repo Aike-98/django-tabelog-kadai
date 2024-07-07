@@ -5,6 +5,8 @@ from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.core.validators import MinValueValidator,MaxValueValidator
+from django.core.exceptions import ValidationError
+from datetime import datetime
 
 # models.Modelを継承した汎用クラス
 class ExtendedModel(models.Model):
@@ -64,6 +66,22 @@ class Review(ExtendedModel):
     comment = models.CharField(verbose_name='コメント', max_length=800)
     visited_date = models.DateField(verbose_name='利用日')
 
+    def number_of_stars_str(self):
+        '''
+        星の数分の長さの文字列を返すメソッド
+        '''
+        true_star = self.number_of_stars * ' '
+        false_star = (MAX_STAR - self.number_of_stars) * ' '
+        return {'true_star': true_star, 'false_star': false_star}
+    
+    def clean(self):
+        '''
+        バリデーション
+        '''
+        super().clean()
+        today = timezone.now().date()
+        if self.visited_date > today:
+            raise ValidationError("利用日には過去の日付を選択してください。")
 
 # お気に入り
 class Favorite(models.Model):
@@ -72,5 +90,30 @@ class Favorite(models.Model):
 
     restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+
+
+# 予約
+class Reservation(ExtendedModel):
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+    restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
+    reservation_datetime = models.DateTimeField(verbose_name='予約日時')
+    number_of_persons = models.PositiveIntegerField(verbose_name='予約人数')
+    comment = models.CharField(verbose_name='コメント', max_length=200, null=True, blank=True)
+
+    def clean(self):
+        '''
+        バリデーション
+        '''
+        super().clean()
+
+        restaurant = self.restaurant_id
+        reservation_datetime = self.reservation_datetime.time()
+
+        if self.reservation_datetime < timezone.now():
+            raise ValidationError('予約日には未来の日付を選択してください。')
+
+        if  not restaurant.opening_time <= reservation_datetime < restaurant.closing_time:
+            raise ValidationError('予約時刻は営業時間内で指定してください。')
+
 
 

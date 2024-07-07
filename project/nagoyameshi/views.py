@@ -6,6 +6,7 @@ from . import models, forms
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.contrib import messages
+from datetime import datetime
 
 # index
 class IndexView(View):
@@ -37,7 +38,7 @@ class TopView(LoginRequiredMixin, View):
 
         # カテゴリが指定されている場合、検索条件に追加
         if selected_category:
-            query &= Q(category_id=selected_category)
+            query &= Q(category_id__name__exact=selected_category)
 
         # 条件に合致する店舗を検索
         restaurants = models.Restaurant.objects.filter(query)
@@ -118,15 +119,23 @@ class ReviewFormView(LoginRequiredMixin, View):
         print(form)
 
         if form.is_valid():
+            # バリデーションOK
             print('投稿完了')
             form.save()
             messages.success(request, 'レビューを投稿しました')
             return redirect('nagoyameshi:review_list', pk=pk)
+        
         else:
-            print(form.errors)
+            # バリデーションNG
             restaurant = models.Restaurant.objects.get(pk=pk)
-            context = {'restaurant':restaurant, 'form': form}
-            messages.warning(request, '投稿に失敗しました')
+            context = {'restaurant': restaurant, 'form': form}
+ 
+            # エラーメッセージ
+            values = form.errors.get_json_data().values()
+            for value in values:
+                for v in value:
+                    messages.error(request, v["message"])
+
             return render(request, 'nagoyameshi/review_form.html', context)
 
 review_form = ReviewFormView.as_view()
@@ -136,7 +145,60 @@ review_form = ReviewFormView.as_view()
 class MypageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         favorites = models.Favorite.objects.filter(user_id=request.user)
-        context = {'favorites': favorites}
+        reservations = models.Reservation.objects.filter(user_id=request.user)
+        context = {'favorites': favorites, 'reservations':reservations}
         return render(request, 'nagoyameshi/mypage.html', context)
 
 mypage = MypageView.as_view()
+
+# 予約フォーム
+class ReservationFormView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        form = forms.ReservationForm()
+        restaurant = models.Restaurant.objects.get(pk=pk)
+        context = {'restaurant':restaurant, 'form': form}
+        return render(request, 'nagoyameshi/reservation_form.html', context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        '''
+        予約の申し込み処理
+        '''
+        restaurant = models.Restaurant.objects.get(pk=pk)
+
+        copied = request.POST.copy()
+        copied['restaurant_id'] = restaurant
+        copied['user_id'] = request.user
+
+        form = forms.ReservationForm(copied)
+
+        print('======form======')
+        print(type(copied['reservation_datetime']))
+        print(copied['reservation_datetime'])
+
+        # 予約の重複確認
+        # if models.Reservation.objects.filter(user_id=request.user).exists():
+        #     messages.error(request, '既に予約が入っています。')
+        #     context = {'restaurant': restaurant, 'form': form}
+        #     return render(request, 'nagoyameshi/reservation_form.html', context)
+
+
+        if form.is_valid():
+            # バリデーションOK
+            print('予約完了')
+            form.save()
+            messages.success(request, '予約しました')
+            return redirect('nagoyameshi:restaurant_detail', pk=pk)
+        
+        else:
+            # バリデーションNG
+            values = form.errors.get_json_data().values()
+            for value in values:
+                for v in value:
+                    messages.error(request, v["message"])
+
+            restaurant = models.Restaurant.objects.get(pk=pk)
+            context = {'restaurant': restaurant, 'form': form}
+
+            return render(request, 'nagoyameshi/reservation_form.html', context)
+
+reservation_form = ReservationFormView.as_view()
