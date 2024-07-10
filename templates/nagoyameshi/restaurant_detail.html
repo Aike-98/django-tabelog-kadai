@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% block title %}{{restaurant.name}}{% endblock %}
+
+{% block content %}
+<h1 class="page_title">{{restaurant.name}}</h1>
+
+<div class="container">
+
+
+
+{# ボタン:お気に入り/レビュー/予約 #}
+<div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-light btn-lg">
+            {% if favorite %}
+            お気に入り：登録中<span class="text-danger mx-2"><i class="fa-solid fa-heart"></i></span>
+            {% else %}
+            お気に入り：未登録<span class="text-muted mx-2"><i class="fa-solid fa-heart"></i></span>
+            {% endif %}
+        </button>
+    </form>
+
+    <a href="{% url 'nagoyameshi:review_list' pk=restaurant.pk %}">レビューを見る</a>
+    <a href="{% url 'nagoyameshi:reservation_form' pk=restaurant.pk %}" class="btn btn-primary btn-lg">予約する</a>
+</div>
+
+{# 店舗紹介 #}
+<div class="mx-auto">{{restaurant.description}}</div>
+
+{# 店舗画像（仮）#}
+<img src="{% static 'nagoyameshi/img/top/misokatsu.jpg' %}" alt="" class="w-25 mx-auto">
+
+{# 店舗情報（表）#}
+<table class="table w-75 mx-auto">
+    <tr>
+        <th>営業時間</th>
+        <td>
+            {{restaurant.opening_time}} ~ {{restaurant.closing_time}}
+        </td>
+    </tr>
+    <tr>
+        <th>電話番号</th>
+        <td>{{restaurant.phone_number}}</td>
+    </tr>
+    <tr>
+        <th>所在地</th>
+        <td>
+            {{restaurant.postal_code}}<br>
+            {{restaurant.city}}{{restaurant.street_address}}
+        </td>
+    </tr>
+    <tr>
+        <th>定休日</th>
+        <td>{{restaurant.regular_closing_day}}</td>
+    </tr>
+    <tr>
+        <th>価格</th>
+        <td>
+            {{restaurant.floor_price}} ~ {{restaurant.maximum_price}} 円
+        </td>
+    </tr>
+</table>
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% block title %}予約フォーム{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'nagoyameshi/css/star_radio.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>{{ restaurant.name }}へのご予約</h2>
+<form action="" method="POST">
+    {% csrf_token %}
+
+    <table>
+        {# 予約日時 #}
+        <tr>
+            <td>ご予約日時</td>
+            <td><input type="datetime-local" name="reservation_datetime"></td>
+        </tr>
+        
+        {# 予約人数 #}
+        <tr>
+            <td>人数</td>
+            <td><input type="number" name="number_of_persons"></td>
+        </tr>
+
+        {# コメント #}
+        <tr>
+            <td>共有事項</td>
+            <td><textarea name="comment"></textarea></td>
+        </tr>
+        
+
+    </table>
+
+    <input type="submit" value="予約を確定する">
+</form>
+
+{% endblock %}
