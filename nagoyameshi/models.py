@@ -34,6 +34,7 @@ class Restaurant(ExtendedModel):
     name = models.CharField(verbose_name='店舗名', max_length=30)
     category_id = models.ForeignKey(Category, verbose_name='カテゴリー', on_delete=models.PROTECT)
     description = models.CharField(verbose_name='店舗説明', max_length=500)
+    #thumbnail = models.ImageField(verbose_name='サムネイル', upload_to='nagoyameshi/restaurant/thumbnail', 	blank=True, default='nagoyameshi/restaurant/thumbnail/noimage.png')
     floor_price = models.PositiveIntegerField(verbose_name='下限価格')
     maximum_price = models.PositiveIntegerField(verbose_name='上限価格')
     opening_time = models.TimeField(verbose_name='開店時刻')

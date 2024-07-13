@@ -11,8 +11,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
-
-from .forms import SignupForm
+from .forms import SignupForm, UpdateUserForm
+from django.contrib import messages
 
 # DjangoのPasswordリセットトークンジェネレーターを流用し、メールアドレス確認用トークンを作る。
 class ActivationTokenGenerator(PasswordResetTokenGenerator):
@@ -20,7 +20,6 @@ class ActivationTokenGenerator(PasswordResetTokenGenerator):
         return f"{user.id}{timestamp}{user.is_active}"
 
 activation_token = ActivationTokenGenerator()
-
 
 # ===============================================
 # 会員登録
@@ -131,3 +130,36 @@ password_reset              = PasswordResetView.as_view()
 password_reset_done         = PasswordResetDoneView.as_view()
 password_reset_confirm      = PasswordResetConfirmView.as_view()
 password_reset_complete     = PasswordResetCompleteView.as_view()
+
+# ===============================================
+# ユーザー情報変更
+# ===============================================
+class UserUpdateView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        form = UpdateUserForm()
+        context = {'form': form}
+        return render(request, 'registration/user_update_form.html', context)
+
+
+    def post(self, request, *args, **kwargs):
+        copied = request.POST.copy()
+        form = UpdateUserForm(copied)
+
+        if form.is_valid():
+            # バリデーションOK
+            print('変更完了')
+            form.save()
+            messages.success(request, 'ユーザー情報を変更しました')
+            return redirect('nagoyameshi:mypage')
+        
+        else:
+            # バリデーションNG
+            values = form.errors.get_json_data().values()
+            for value in values:
+                for v in value:
+                    messages.error(request, v["message"])
+
+            context = {'form': form}
+            return render(request, 'registration/user_update_form.html', context)
+
+user_update = UserUpdateView.as_view()

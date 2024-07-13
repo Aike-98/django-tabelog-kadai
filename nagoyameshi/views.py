@@ -7,6 +7,10 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.contrib import messages
 from datetime import datetime
+from django.conf import settings
+from django.urls import reverse_lazy
+import stripe
+stripe.api_key  = settings.STRIPE_API_KEY
 
 # ===============================================
 # index
@@ -16,6 +20,104 @@ class IndexView(View):
         return render(request, 'nagoyameshi/index.html')
 
 index = IndexView.as_view()
+
+# ===============================================
+# サブスク : 購入処理のセッションを生成
+# ===============================================
+class CheckoutView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+
+        # セッションを作る
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    'price': settings.STRIPE_PRICE_ID,
+                    'quantity': 1,
+                },
+            ],
+            payment_method_types=['card'],
+            mode='subscription',
+            success_url=request.build_absolute_uri(reverse_lazy("nagoyameshi:success")) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=request.build_absolute_uri(reverse_lazy("nagoyameshi:index")),
+        )
+
+        print(checkout_session['id'])
+
+        return redirect(checkout_session.url)
+
+checkout = CheckoutView.as_view()
+
+# ===============================================
+# サブスク : 購入処理の支払い状況を確認
+# ===============================================
+class SuccessView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+
+        # パラメータにセッションIDがあるかチェック
+        if "session_id" not in request.GET:
+            print("セッションIDがありません。")
+            return redirect("nagoyameshi:index")
+        
+        # セッションIDが有効であるかチェック
+        try:
+            checkout_session_id = request.GET['session_id']
+            checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
+        except:
+            print("このセッションIDは無効です。")
+            return redirect("nagoyameshi:index")
+        
+        print(checkout_session)
+
+        # statusをチェック。未払いであれば拒否する。
+        if checkout_session["payment_status"] != "paid":
+            print("未払い")
+            return redirect("nagoyameshi:index")
+        
+        print("支払い済み")
+
+        # 有効であれば、セッションIDからカスタマーIDを取得しユーザーモデルに記録する。
+        request.user.customer_id = checkout_session["customer"]
+        request.user.save()
+
+        print("有料会員登録しました！")
+        return redirect("nagoyameshi:premium")
+
+success = SuccessView.as_view()
+
+# ===============================================
+# サブスク : ポータルサイトへのリダイレクト
+# ===============================================
+class PortalView(LoginRequiredMixin, View):
+    def get(self, request, *ards, **kwargs):
+
+        if not request.user.customer_id:
+            print("有料会員登録されていません")
+            return redirect("nagoyameshi:index")
+        
+        portalSession = stripe.billing_portal.Session.create(
+            customer = request.user.customer_id,
+            return_url = request.build_absolute_uri(reverse_lazy("nagoyameshi:premium")),
+            )
+
+        return redirect(portalSession.url)
+
+portal = PortalView.as_view()
+
+# ===============================================
+# サブスク : 有料会員登録ページ/有料会員ページ
+# ===============================================
+template_inactive = "nagoyameshi/premium_inactive.html"
+template_active = "nagoyameshi/premium_active.html"
+class PremiumView(View):
+    def get(self, request, *args, **kwargs):
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+
+        # 有効なら会員のページを表示
+        return render(request, template_active)
+
+premium = PremiumView.as_view()
 
 # ===============================================
 # top
@@ -67,6 +169,10 @@ class RestaurantDetailView(LoginRequiredMixin, View):
         '''
         お気に入り登録の処理
         '''
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
         restaurant = models.Restaurant.objects.get(pk=pk)
         query = Q()
         query &= Q(user_id = request.user)
@@ -109,6 +215,10 @@ review_list = ReviewListView.as_view()
 # ===============================================
 class ReviewFormView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
         form = forms.ReviewForm()
         restaurant = models.Restaurant.objects.get(pk=pk)
         context = {'restaurant':restaurant, 'form': form}
@@ -118,6 +228,10 @@ class ReviewFormView(LoginRequiredMixin, View):
         '''
         レビューの投稿処理
         '''
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
         copied = request.POST.copy()
         copied['restaurant_id'] = models.Restaurant.objects.get(pk=pk)
         copied['user_id'] = request.user
@@ -166,6 +280,10 @@ mypage = MypageView.as_view()
 # ===============================================
 class ReservationFormView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
         form = forms.ReservationForm()
         restaurant = models.Restaurant.objects.get(pk=pk)
         context = {'restaurant':restaurant, 'form': form}
@@ -175,6 +293,10 @@ class ReservationFormView(LoginRequiredMixin, View):
         '''
         予約の申し込み処理
         '''
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
         restaurant = models.Restaurant.objects.get(pk=pk)
 
         copied = request.POST.copy()
@@ -207,3 +329,48 @@ class ReservationFormView(LoginRequiredMixin, View):
             return render(request, 'nagoyameshi/reservation_form.html', context)
 
 reservation_form = ReservationFormView.as_view()
+
+# ===============================================
+# 予約変更
+# ===============================================
+class ReservationDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        # サブスクが無効なら非会員のページを表示
+        if not check_subscription_state(request):
+            return render(request, template_inactive)
+        
+        reservation = models.Reservation.objects.get(pk=pk)
+        reservation.delete()
+        return redirect('nagoyameshi:mypage')
+    
+reservation_delete = ReservationDeleteView.as_view()
+
+########
+
+def check_subscription_state(request):
+    '''
+    サブスクが有効ならTrue、無効ならFalseを返す
+    '''
+    # カスタマーIDがない場合false
+    if not request.user.customer_id:
+        print("カスタマーIDがセットされていません")
+        return False
+
+    # カスタマーIDをもとにStripeに問い合わせ
+    try:
+        subscriptions = stripe.Subscription.list(customer=request.user.customer_id)
+    except:
+        print("このカスタマーIDは無効です。")
+        request.user.customer_id = ""
+        request.user.save()
+        return False
+    
+    # ステータスがアクティブであるかチェック
+    for subscription in subscriptions.auto_paging_iter():
+        if subscription.status == "active":
+            print("サブスクリプションは有効です。")
+            return True
+        else:
+            print("サブスクリプションが無効です。")
+
+    return False

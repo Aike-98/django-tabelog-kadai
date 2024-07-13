@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import ExtendedModel, Category, Day, Restaurant, Review
+from django.utils.safestring import mark_safe
 
 admin.site.register(ExtendedModel)
 admin.site.register(Day)
@@ -17,8 +18,11 @@ class RestaurantAdmin(admin.ModelAdmin):
     search_fields = ('name', )
     list_filter = ('category_id', )
 
-    def get_regular_closing_day(self, obj):
-        return "\n".join([day.name for day in obj.regular_closing_day.all()])
+    # def get_regular_closing_day(self, obj):
+    #     return "\n".join([day.name for day in obj.regular_closing_day.all()])
+    
+    # def image(self, obj):
+    #     return mark_safe('<img scr="{}" style="width:100px height:auto;">'.format(obj.thumbnail.url))
 
 admin.site.register(Restaurant, RestaurantAdmin)
 

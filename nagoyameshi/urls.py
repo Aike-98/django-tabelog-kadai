@@ -9,5 +9,12 @@ urlpatterns = [
     path('restaurant/review_list/<int:pk>', views.review_list, name='review_list'),
     path('restaurant/review_form/<int:pk>', views.review_form, name='review_form'),
     path('restaurant/reservation_form/<int:pk>', views.reservation_form, name='reservation_form'),
+    path('restaurant/reservation_delete/<int:pk>', views.reservation_delete, name='reservation_delete'),
     path('mypage/', views.mypage, name='mypage'),
+
+    # サブスク関連
+    path("checkout/", views.checkout, name="checkout"),
+    path("success/", views.success, name="success"),
+    path("portal/", views.portal, name="portal"),
+    path("premium/", views.premium, name="premium"),
 ]

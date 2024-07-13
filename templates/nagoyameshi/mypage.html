@@ -6,23 +6,32 @@
 <h1>{{user.username}}さんのマイページ</h1>
 
 <section>
-    <h3>お気に入りの店舗：{{ favorites.count }}件</h3>
-    <ul>
-        {% if favorites %}
-            {% for favorite in favorites %}
-            <li><a href="{% url 'nagoyameshi:restaurant_detail' pk=favorite.restaurant_id.pk %}">{{favorite.restaurant_id}}</a></li>
-            {% endfor %}
-        {% else %}
-            <p>お気に入り登録した店舗はまだありません。</p>
-        {% endif %}
-    </ul>
+    <h3>お気に入り</h3>
+    {% if user.customer_id %}
+    {# 有料会員ならお気に入り店舗を表示 #}
+        <p>{{ favorites.count }}件登録中</p>
+        <ul>
+            {% if favorites %}
+                {% for favorite in favorites %}
+                <li><a href="{% url 'nagoyameshi:restaurant_detail' pk=favorite.restaurant_id.pk %}">{{favorite.restaurant_id}}</a></li>
+                {% endfor %}
+            {% else %}
+                <p>お気に入り登録した店舗はまだありません。</p>
+            {% endif %}
+        </ul>
+    {% else %}
+    {# 無料会員なら有料会員登録に誘導 #}
+        <p> <a href="{% url 'nagoyameshi:premium' %}">有料会員になる</a>と店舗をお気に入り登録することができます。</p>
+
+    {% endif %}
 </section>
 
 <section>
     <h3>予約一覧</h3>
-    {% if reservations %}
+    {% if user.customer_id %}
+    {# 有料会員なら予約店舗を表示 #}
+        {% if reservations %}
         <table border="2">
- 
             <tr>
                 <th>店舗</th>
                 <th>予約日時</th>
@@ -30,24 +39,35 @@
                 <th>共有事項</th>
                 <th>操作</th>
             </tr>
-
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{reservation.restaurant_id.name}}</td>
-                <td>{{reservation.reservation_datetime}}</td>
-                <td>{{reservation.number_of_persons}}</td>
-                <td>{{reservation.comment}}</td>
-                <td><a href="">取り消し</a></td>
-            </tr>
-        {% endfor %}
+            {% for reservation in reservations %}
+                <tr>
+                    <td>{{reservation.restaurant_id.name}}</td>
+                    <td>{{reservation.reservation_datetime}}</td>
+                    <td>{{reservation.number_of_persons}}</td>
+                    <td>{{reservation.comment}}</td>
+                    <td>
+                        <form action="{% url 'nagoyameshi:reservation_delete' pk=reservation.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit">キャンセル</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
+        {% else %}
+            <p>予約情報はまだありません。</p>
+        {% endif %}
+    
     {% else %}
-        <p>予約情報はまだありません。</p>
+    {# 無料会員なら有料会員登録に誘導 #}
+    <p> <a href="{% url 'nagoyameshi:premium' %}">有料会員になる</a>と店舗を予約することができます。</p>
+    
     {% endif %}
+
 </section>
 
 <section>
-    <h3>会員情報</h3>
+    <h3>会員情報 </h3>
     <table>
         <tr>
             <td>ニックネーム</td>
@@ -103,7 +123,7 @@
     </table>
     
 
-    <a href="">編集</a>
+    <a href="{% url 'user_update' %}">編集</a>
 </section>
 
 <section>
@@ -112,8 +132,9 @@
     <ul>
         <li>予約機能</li>
         <li>レビュー投稿機能</li>
+        <li>お気に入り機能</li>
     </ul>
-    <a href="">有料会員になる</a>
+    <a href="{% url 'nagoyameshi:premium' %}">有料会員になる</a>
 </section>
 
 <section>

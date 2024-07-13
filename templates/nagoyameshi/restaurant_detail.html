@@ -15,11 +15,18 @@
     <form action="" method="POST">
         {% csrf_token %}
         <button type="submit" class="btn btn-light btn-lg">
-            {% if favorite %}
-            お気に入り：登録中<span class="text-danger mx-2"><i class="fa-solid fa-heart"></i></span>
+            {% if user.customer_id %}
+            {# 有料会員ならお気に入り機能が利用可 #}
+                {% if favorite %}
+                お気に入り：登録中<span class="text-danger mx-2"><i class="fa-solid fa-heart"></i></span>
+                {% else %}
+                お気に入り：未登録<span class="text-muted mx-2"><i class="fa-solid fa-heart"></i></span>
+                {% endif %}
             {% else %}
-            お気に入り：未登録<span class="text-muted mx-2"><i class="fa-solid fa-heart"></i></span>
+            {# 無料会員なら利用不可 #}
+                お気に入り登録（有料）<span class="text-muted mx-2"><i class="fa-solid fa-heart"></i></span>
             {% endif %}
+            
         </button>
     </form>
 
