@@ -54,7 +54,7 @@
     </tr>
     <tr>
         <th>定休日</th>
-        <td>{{restaurant.regular_closing_day}}</td>
+        <td>{% for day in restaurant.regular_closing_day.all %}{{day.name}}{% endfor %}</td>
     </tr>
     <tr>
         <th>価格</th>

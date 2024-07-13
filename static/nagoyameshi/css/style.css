@@ -123,13 +123,16 @@ header{
 main{
     background-color: var(--main-color);
 }
-.page_title{
+h1{
     margin: 0 auto;
     padding-top: 20px;
     padding-bottom: 20px;
     color: var(--sub-color-2);
     text-align: center;
     font-weight: bold;
+}
+.bg_color_main{
+    background-color: var(--main-color);
 }
 
 /* ----- message_area ----- */

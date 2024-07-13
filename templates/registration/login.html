@@ -5,7 +5,7 @@
 {% block content %}
 <h1>ログイン</h1>
 
-<br>
+<div class="container">
 <p>テストユーザー</p>
 <ul>
     <li>ユーザー名：user01</li>
@@ -13,11 +13,12 @@
     <li>パスワード：nagoya#user01</li>
 </ul>
 
-<form action="{% url 'login' %}" method="POST">
+<form action="{% url 'login' %}" method="POST" class="w-75 mx-auto">
     {% csrf_token %}
     {{ form|bootstrap }}
     <br>
-    <input type="submit" class="btn btn-primary" value="ログイン">
+    <input type="submit" class="btn btn-primary d-block mx-auto" value="ログイン">
 </form>
 
+</div>
 {% endblock %}
