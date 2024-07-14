@@ -33,7 +33,27 @@
 
     </table>
 
-    <input type="submit" value="予約を確定する">
+    <button type="button" data-bs-toggle="modal" data-bs-target="#reservationConfirmModal">予約</button>
+                          
+    {# 確認モーダル #}
+    <div class="modal fade" id="reservationConfirmModal" tabindex="-1" aria-labelledby="reservationConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="reservationConfirmModalLabel">予約 </h2>
+                    <button type="button" class="btn text-muted btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-window-close"></i></button>
+                </div>
+                <div class="modal-body">
+                    予約を確定しますか？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">確定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </form>
 
 {% endblock %}

@@ -48,7 +48,27 @@
                     <td>
                         <form action="{% url 'nagoyameshi:reservation_delete' pk=reservation.pk %}" method="POST">
                             {% csrf_token %}
-                            <button type="submit">キャンセル</button>
+
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal">取り消し</button>
+                          
+                            {# 確認モーダル #}
+                            <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2 class="modal-title fs-5" id="cancelConfirmModalLabel">予約の取り消し</h2>
+                                            <button type="button" class="btn text-muted btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-window-close"></i></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            予約を取り消ししますか？
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                                            <button type="submit" class="btn btn-primary">確定</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </td>
                 </tr>
@@ -140,7 +160,27 @@
 <section>
     <form action="{% url 'logout' %}" method="POST">
         {% csrf_token %}
-        <button type="submit">ログアウト</button>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#logoutModal">ログアウト</button>
+                          
+        {# ログアウト確認モーダル #}
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="logoutModalLabel">ログアウト</h2>
+                        <button type="button" class="btn text-muted btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-window-close"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        ログアウトしますか？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">ログアウト</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 </section>
 {% endblock %}

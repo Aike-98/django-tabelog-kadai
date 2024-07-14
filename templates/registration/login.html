@@ -6,21 +6,23 @@
 <h1>ログイン</h1>
 
 <div class="container">
-<p>テストユーザー</p>
-<ul>
-    <li>ユーザー名：user01</li>
-    <li>メールアドレス：user01@xxx.xx</li>
-    <li>パスワード：nagoya#user01</li>
-</ul>
 
 <form action="{% url 'login' %}" method="POST" class="w-75 mx-auto">
     {% csrf_token %}
     {{ form|bootstrap }}
     <br>
-    <input type="submit" class="btn btn-primary d-block mx-auto" value="ログイン">
+    <a href="{% url 'password_reset' %}" class="text-center mx-auto d-block">パスワードをお忘れの場合</a>
+    <input type="submit" class="btn btn-primary d-block mx-auto m-4" value="ログイン">
 </form>
 
-<a href="{% url 'password_reset' %}" class="w-75 mx-auto">パスワードを忘れた場合</a>
+</div>
 
+<div class="w-50 bg-warning container mt-3">
+    <p>テストユーザー</p>
+    <ul>
+        <li>ユーザー名：user01</li>
+        <li>メールアドレス：user01@xxx.xx</li>
+        <li>パスワード：nagoya#user01</li>
+    </ul>
 </div>
 {% endblock %}
