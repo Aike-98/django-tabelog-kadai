@@ -6,12 +6,19 @@
 <h2>{{ restaurant.name }}へのレビュー一覧</h2>
 
 
-<a href="{% url 'nagoyameshi:review_form' pk=restaurant.pk %}">レビューを投稿する</a>
+<a href="{% url 'nagoyameshi:review_form' pk=restaurant.pk %}" class="btn btn-secondary">
+    レビューを投稿する
+    {% if not user.customer_id %}
+        <i class="fa-solid fa-gem ml-1" style="color: #74C0FC;"></i>
+    {% endif %}
+</a>
 
 <div>
 {% for review in review_list %}
     <div class="border">
         <p>{{ review.user_id.username }}</p>
+
+        {# 星の数 #}
         <p>
             {% for i in review.number_of_stars_str.true_star  %}
             <i class="fa-solid fa-star text-warning"></i>
@@ -20,8 +27,43 @@
             <i class="fa-solid fa-star text-muted"></i>
             {% endfor %}
         </p>
+
+        {# 来店日 #}
         <p>{{ review.visited_date }}</p>
+
+        {# コメント #}
         <p>{{ review.comment }}</p>
+
+        {# 編集ボタン #}
+        {% if user.username == review.user_id.username %}
+        <a href="{% url 'nagoyameshi:review_edit' pk=review.pk %}">編集</a>
+        <form action="{% url 'nagoyameshi:review_delete' pk=review.pk %}" method="POST">
+            {% csrf_token %}
+            <button type="button" data-bs-toggle="modal" data-bs-target="#reviewDeleteConfirmModal" class="btn btn-link">削除</button>
+                          
+            {# 確認モーダル #}
+            <div class="modal fade" id="reviewDeleteConfirmModal" tabindex="-1" aria-labelledby="reviewDeleteConfirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title fs-5" id="reviewDeleteConfirmModalLabel">レビュー削除 </h2>
+                            <button type="button" class="btn text-muted btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-window-close"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            レビューを削除しますか？
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                            <button type="submit" class="btn btn-primary">確定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+        {% endif %}
+
+        {# 投稿日 #}
         <p>{{ review.created_at }}</p>
     </div>
 {% endfor %}

@@ -16,8 +16,7 @@
         {% for restaurant in restaurants %}
             <div class="col-lg-4">
             <div class="card h-100" style="width: 18rem;">
-                {# イメージは仮 #}
-                <img src="{% static 'nagoyameshi/img/top/misokatsu.jpg' %}" class="card-img-top" alt="">
+                <img src="{{ restaurant.image.url }}" class="card-img-top" alt="">
                 <div class="card-body">
                     <h5 class="card-title">{{ restaurant.name }}</h5>
                     <p class="card-text">{{ restaurant.description }}</p>

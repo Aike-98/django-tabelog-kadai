@@ -23,7 +23,6 @@ base.htmlに適用するデザイン
     background-color: var(--sub-color-1);
 }
 
-
 /* ----- header ----- */
 header{
     background-color: var(--sub-color-2);
@@ -189,3 +188,62 @@ left: 0;
 min-width: 100%;
 height: 100vh;
 }
+
+/* =========================================
+mypage.htmlに適用するデザイン
+========================================= */
+.mypage_section > .fa-caret-right{
+    color: var(--sub-color-1);
+}
+.mypage_section > span{
+    font-weight: bold;
+}
+
+/* =========================================
+mypage.htmlに適用するデザイン
+========================================= */
+/* 固定ボタン */
+.btn_fixed{
+    position:fixed;
+    right: 100px;
+    bottom: 30px;
+}
+
+
+/* =========================================
+restaurant_detail.htmlに適用するデザイン
+========================================= */
+#restaurantDetailCarousel{
+    max-width: 600px;
+    height:28rem;
+}
+.carousel_container{
+    margin-bottom: 8rem;
+}
+.carousel-item > div{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 28rem;
+}
+.carousel-indicators{
+    bottom: -4rem;
+}
+.carousel-indicators > button{
+    width:4rem;
+    height:4rem;
+    border: none;
+    padding: 1px;
+}
+.carousel_img_btn{
+    object-fit:cover;
+    width: 100%;
+    height: 100%;
+}
+
+.star_avg{
+    font-size: 2rem;
+    width: 20rem;
+    height: 2rem;
+}
+  

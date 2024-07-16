@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Avg
 from . import models, forms
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -160,8 +160,9 @@ top = TopView.as_view()
 class RestaurantDetailView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         restaurant = models.Restaurant.objects.get(pk=pk)
+        photos = models.RestaurantPhoto.objects.filter(restaurant_id=restaurant)
         favorite = models.Favorite.objects.filter(user_id=request.user, restaurant_id=restaurant).exists()
-        context = {'restaurant': restaurant, 'favorite':favorite}
+        context = {'restaurant': restaurant, 'photos':photos, 'favorite':favorite}
 
         return render(request, 'nagoyameshi/restaurant_detail.html', context)
     
@@ -262,6 +263,56 @@ class ReviewFormView(LoginRequiredMixin, View):
             return render(request, 'nagoyameshi/review_form.html', context)
 
 review_form = ReviewFormView.as_view()
+
+# ===============================================
+# レビュー編集
+# ===============================================
+class ReviewEditView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        review = models.Review.objects.get(pk=pk,user_id=request.user)
+        context = {'review':review}
+        return render(request, 'nagoyameshi/review_edit.html', context)
+
+    def post(self, request, pk, *args, **kwargs):
+        review = models.Review.objects.get(pk=pk)
+        copied = request.POST.copy()
+        copied['user_id'] = review.user_id
+        copied['restaurant_id'] = review.restaurant_id
+
+        form = forms.ReviewForm(copied, instance=review)
+
+        if form.is_valid():
+            # バリデーションOK
+            print('編集完了')
+            form.save()
+            messages.success(request, 'レビューを編集しました')
+            return redirect('nagoyameshi:review_list', pk=review.restaurant_id.pk)
+        
+        else:
+            # バリデーションNG
+            review = models.Review.objects.get(pk=pk,user_id=request.user)
+            context = {'review':review}
+ 
+            # エラーメッセージ
+            values = form.errors.get_json_data().values()
+            for value in values:
+                for v in value:
+                    messages.error(request, v["message"])
+
+            return render(request, 'nagoyameshi/review_edit.html', context)
+
+review_edit = ReviewEditView.as_view()
+
+# ===============================================
+# レビュー削除
+# ===============================================
+class ReviewDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        review = models.Review.objects.get(pk=pk,user_id=request.user)
+        review.delete()
+        return redirect('nagoyameshi:review_list', pk=review.restaurant_id.pk)
+
+review_delete = ReviewDeleteView.as_view()
 
 # ===============================================
 # マイページ

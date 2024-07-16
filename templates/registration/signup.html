@@ -5,11 +5,14 @@
 {% block content %}
 <h1>新規登録</h1>
 
-<form action="{% url 'signup' %}" method="POST">
+<div class="container">
+
+<form action="{% url 'signup' %}" method="POST" class="w-75 mx-auto">
     {% csrf_token %}
     {{ form|bootstrap }}
     <br>
-    <input type="submit" class="btn btn-primary" value="登録">
+    <input type="submit" class="btn btn-primary btn-lg d-block mx-auto m-4" value="登録">
 </form>
 
+</div>
 {% endblock %}

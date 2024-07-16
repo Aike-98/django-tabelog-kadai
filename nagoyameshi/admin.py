@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExtendedModel, Category, Day, Restaurant, Review
+from .models import ExtendedModel, Category, Day, Restaurant, RestaurantPhoto, Review
 from django.utils.safestring import mark_safe
 
 admin.site.register(ExtendedModel)
@@ -25,6 +25,15 @@ class RestaurantAdmin(admin.ModelAdmin):
     #     return mark_safe('<img scr="{}" style="width:100px height:auto;">'.format(obj.thumbnail.url))
 
 admin.site.register(Restaurant, RestaurantAdmin)
+
+# 店舗画像（詳細）
+class RestaurantPhotoAdmin(admin.ModelAdmin):
+    list_display = ('image_view', 'restaurant_id')
+
+    def image_view(self, obj):
+        return mark_safe('<img scr="{}" style="width:100px height:auto;">'.format(obj.image.url))
+
+admin.site.register(RestaurantPhoto, RestaurantPhotoAdmin)
 
 # レビュー
 class ReviewAdmin(admin.ModelAdmin):

@@ -142,8 +142,7 @@ class UserUpdateView(LoginRequiredMixin, View):
 
 
     def post(self, request, *args, **kwargs):
-        copied = request.POST.copy()
-        form = UpdateUserForm(copied)
+        form = UpdateUserForm(request.POST, instance=request.user)
 
         if form.is_valid():
             # バリデーションOK

@@ -7,6 +7,7 @@ User = get_user_model()
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
+from django.db.models import Avg
 
 # models.Modelを継承した汎用クラス
 class ExtendedModel(models.Model):
@@ -30,11 +31,14 @@ class Day(models.Model):
     
 
 # 店舗
+def get_top_image_path(instance, filename):
+    return "nagoyameshi/restaurant/%s/top/%s"%(str(instance.pk), filename)
+
 class Restaurant(ExtendedModel):
     name = models.CharField(verbose_name='店舗名', max_length=30)
     category_id = models.ForeignKey(Category, verbose_name='カテゴリー', on_delete=models.PROTECT)
     description = models.CharField(verbose_name='店舗説明', max_length=500)
-    #thumbnail = models.ImageField(verbose_name='サムネイル', upload_to='nagoyameshi/restaurant/thumbnail', 	blank=True, default='nagoyameshi/restaurant/thumbnail/noimage.png')
+    image = models.ImageField(verbose_name='トップ画像', upload_to=get_top_image_path, 	blank=True, default='nagoyameshi/noimage.png')
     floor_price = models.PositiveIntegerField(verbose_name='下限価格')
     maximum_price = models.PositiveIntegerField(verbose_name='上限価格')
     opening_time = models.TimeField(verbose_name='開店時刻')
@@ -56,7 +60,58 @@ class Restaurant(ExtendedModel):
     
     def get_regular_closing_day(self):
         return "\n".join([day.name for day in self.regular_closing_day.all()])
+    
+    def count_reviews(self):
+        return Review.objects.filter(restaurant_id=self.id).count()
 
+    def stars_avg_str(self):
+        '''
+        星の数の平均値を文字列の長さに変換するメソッド
+        '''
+        reviews = Review.objects.filter(restaurant_id=self.id).aggregate(Avg("number_of_stars"))
+        avg     = reviews["number_of_stars__avg"]
+
+        if not avg:
+            avg = 0
+        
+        true_num = int(avg)
+        half_num = 0
+        false_num = int( MAX_STAR - avg )
+
+        few = avg - true_num
+
+        if few == 0:
+            pass
+        elif 0 < few < 0.4 :
+            false_num += 1
+        elif 0.4 <= few < 0.6:
+            half_num += 1
+        else:
+            true_num += 1
+        
+        avg = round(avg, 2)
+
+        true_star = true_num * ' '
+        half_star = half_num * ' '
+        false_star = false_num * ' '
+        return {'num':avg, 'true_star': true_star, 'half_star': half_star, 'false_star': false_star}
+        
+        
+    def number_of_stars_str(self):
+        '''
+        星の数分の長さの文字列を返すメソッド
+        '''
+        true_star = self.number_of_stars * ' '
+        false_star = (MAX_STAR - self.number_of_stars) * ' '
+        return {'true_star': true_star, 'false_star': false_star}
+    
+# 店舗写真（詳細）
+def get_photos_path(instance, filename):
+    return "nagoyameshi/restaurant/%s/photos/%s"%(str(instance.restaurant_id.pk), filename)
+
+class RestaurantPhoto(ExtendedModel):
+    restaurant_id = models.ForeignKey(Restaurant, verbose_name='店舗', on_delete=models.CASCADE)
+    image = models.ImageField(verbose_name='画像', upload_to=get_photos_path)
 
 # レビュー
 MAX_STAR = 5
