@@ -131,6 +131,8 @@ class TopView(LoginRequiredMixin, View):
         # リクエストから検索条件を取得
         keyword = request.GET.get('keyword')
         selected_category = request.GET.get('category')
+        # floor_price = request.GET.get('floor_price')
+        # maximum_price = request.GET.get('maximum_price')
 
         # 検索キーワードがある場合、検索条件を追加
         if keyword:
@@ -145,6 +147,19 @@ class TopView(LoginRequiredMixin, View):
         # カテゴリが指定されている場合、検索条件に追加
         if selected_category:
             query &= Q(category_id__name__exact=selected_category)
+        
+        # 下限価格が指定されている場合、検索条件に追加
+        form = forms.RestaurantFloorPriceForm(request.GET)
+        if form.is_valid():
+            cleaned = form.clean()
+            query &= Q(floor_price__gte=cleaned['floor_price'])
+
+        # 下限価格が指定されている場合、検索条件に追加
+        form = forms.RestaurantMaximumPriceForm(request.GET)
+        if form.is_valid():
+            cleaned = form.clean()
+            query &= Q(maximum_price__lte=cleaned['maximum_price'])
+        
 
         # 条件に合致する店舗を検索
         restaurants = models.Restaurant.objects.filter(query)
@@ -269,12 +284,20 @@ review_form = ReviewFormView.as_view()
 # ===============================================
 class ReviewEditView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
-        review = models.Review.objects.get(pk=pk,user_id=request.user)
+        try:
+            review = models.Review.objects.get(pk=pk,user_id=request.user)
+        except:
+            return redirect('nagoyameshi:index')
+        
         context = {'review':review}
         return render(request, 'nagoyameshi/review_edit.html', context)
 
     def post(self, request, pk, *args, **kwargs):
-        review = models.Review.objects.get(pk=pk)
+        try:
+            review = models.Review.objects.get(pk=pk,user_id=request.user)
+        except:
+            return redirect('nagoyameshi:index')
+        
         copied = request.POST.copy()
         copied['user_id'] = review.user_id
         copied['restaurant_id'] = review.restaurant_id
@@ -308,7 +331,11 @@ review_edit = ReviewEditView.as_view()
 # ===============================================
 class ReviewDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
-        review = models.Review.objects.get(pk=pk,user_id=request.user)
+        try:
+            review = models.Review.objects.get(pk=pk,user_id=request.user)
+        except:
+            return redirect('nagoyameshi:index')
+        
         review.delete()
         return redirect('nagoyameshi:review_list', pk=review.restaurant_id.pk)
 

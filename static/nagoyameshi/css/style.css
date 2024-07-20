@@ -7,7 +7,7 @@ base.htmlに適用するデザイン
     --main-color: #FCF5ED;
     --sub-color-1: #F4BF96;
     --sub-color-2: #CE5A67;
-    --accent-color: #1F1717;
+    --accent-color: #1f1717;
     background-color: var(--main-color)
 }
 :root .btn-primary{
@@ -26,7 +26,7 @@ base.htmlに適用するデザイン
 /* ----- header ----- */
 header{
     background-color: var(--sub-color-2);
-    height: 70px;
+    min-height: 70px;
     display:flex;
     flex-direction: row;
     align-items: center;
@@ -121,6 +121,7 @@ header{
 /* ----- main----- */
 main{
     background-color: var(--main-color);
+    min-height: 100vh;
 }
 h1{
     margin: 0 auto;
@@ -175,19 +176,56 @@ h1{
     transition:0.2s;
 }
 
+/* ----- footer ----- */
+footer{
+    background-color: var(--sub-color-1);
+    height: 120px;
+}
+
 /* =========================================
 index.htmlに適用するデザイン
 ========================================= */
-.carousel-item{
+#index-carousel .carousel-item{
     height: 100vh;
 }
-.carousel-item > img{
-position: absolute;
-top: 0;
-left: 0;
-min-width: 100%;
-height: 100vh;
+#index-carousel .carousel-item > img{
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 100vh;
 }
+#index-carousel .carousel-caption{
+    bottom: 0px;
+}
+#index-carousel .carousel_text{
+    font-size: 5rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--sub-color-2);
+    -webkit-text-stroke: 2px var(--main-color);
+    margin: 5rem auto;
+}
+#index-carousel .carousel_btn{
+    font-size: 3rem;
+    margin: 3rem;
+}
+/* =========================================
+top.htmlに適用するデザイン
+========================================= */
+/* .card-body{
+    display: relative;
+    height: 200px;
+} */
+.card-title{
+    font-weight: bold;
+    color: var(--sub-color-2);
+}
+.card:hover{
+    
+    box-shadow: 0.3em 0.3em 1em rgba(31, 23, 23, 0.6);
+}
+
 
 /* =========================================
 mypage.htmlに適用するデザイン
@@ -199,8 +237,9 @@ mypage.htmlに適用するデザイン
     font-weight: bold;
 }
 
+
 /* =========================================
-mypage.htmlに適用するデザイン
+restaurant_detail.htmlに適用するデザイン
 ========================================= */
 /* 固定ボタン */
 .btn_fixed{
@@ -209,10 +248,6 @@ mypage.htmlに適用するデザイン
     bottom: 30px;
 }
 
-
-/* =========================================
-restaurant_detail.htmlに適用するデザイン
-========================================= */
 #restaurantDetailCarousel{
     max-width: 600px;
     height:28rem;
@@ -220,22 +255,22 @@ restaurant_detail.htmlに適用するデザイン
 .carousel_container{
     margin-bottom: 8rem;
 }
-.carousel-item > div{
+#restaurantDetailCarousel .carousel-item > div{
     position: absolute;
     top: 0;
     left: 0;
     height: 28rem;
 }
-.carousel-indicators{
+#restaurantDetailCarousel .carousel-indicators{
     bottom: -4rem;
 }
-.carousel-indicators > button{
+#restaurantDetailCarousel .carousel-indicators > button{
     width:4rem;
     height:4rem;
     border: none;
     padding: 1px;
 }
-.carousel_img_btn{
+#restaurantDetailCarousel .carousel_img_btn{
     object-fit:cover;
     width: 100%;
     height: 100%;

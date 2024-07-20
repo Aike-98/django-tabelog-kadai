@@ -3,7 +3,11 @@ from .models import ExtendedModel, Category, Day, Restaurant, RestaurantPhoto, R
 from django.utils.safestring import mark_safe
 
 admin.site.register(ExtendedModel)
-admin.site.register(Day)
+
+class DayAdmin(admin.ModelAdmin):
+    list_display = ('name', 'key')
+
+admin.site.register(Day, DayAdmin)
 
 # カテゴリー
 class CategoryAdmin(admin.ModelAdmin):
@@ -31,7 +35,7 @@ class RestaurantPhotoAdmin(admin.ModelAdmin):
     list_display = ('image_view', 'restaurant_id')
 
     def image_view(self, obj):
-        return mark_safe('<img scr="{}" style="width:100px height:auto;">'.format(obj.image.url))
+        return mark_safe('<img src="{}" style="width:100px height:auto;">'.format(obj.image.url))
 
 admin.site.register(RestaurantPhoto, RestaurantPhotoAdmin)
 

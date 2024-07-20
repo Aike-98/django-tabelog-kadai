@@ -7,11 +7,13 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ restaurant.name }}へのレビュー</h2>
-<form action="" method="POST">
+<h1>{{ restaurant.name }}へのレビュー</h1>
+
+<div class="container">
+<form action="" method="POST" class="my-3">
     {% csrf_token %}
 
-    <table>
+    <table class="table w-75 mx-auto">
 
         {# 満足度 #}
         <tr>
@@ -40,18 +42,28 @@
         {# コメント #}
         <tr>
             <td>コメント</td>
-            <td><textarea name="comment"></textarea></td>
+            <td><textarea name="comment" class="w-100"></textarea></td>
         </tr>
 
         {# 来店日 #}
         <tr>
             <td>来店日</td>
-            <td><input type="date" name="visited_date"></td>
+            <td><input type="date" name="visited_date"  class="flatpicker w-50"></td>
         </tr>
 
     </table>
 
-    <input type="submit" value="投稿">
+    <input type="submit" class="btn btn-primary btn-lg d-block mx-auto m-4" value="投稿">
 </form>
 
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    flatpickr('.flatpicker', {
+        locale: "ja"
+    });
+</script>
 {% endblock %}

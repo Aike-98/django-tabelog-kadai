@@ -7,11 +7,13 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ review.restaurant_id.name }}へのレビューの編集</h2>
-<form action="" method="POST">
+<h1>{{ review.restaurant_id.name }}へのレビューの編集</h1>
+
+<div class="container">
+<form action="" method="POST" class="w-50 mx-auto my-3">
     {% csrf_token %}
 
-    <table>
+    <table class="table">
 
         {# 満足度 #}
         <tr>
@@ -40,18 +42,19 @@
         {# コメント #}
         <tr>
             <td>コメント</td>
-            <td><textarea name="comment">{{ review.comment }}</textarea></td>
+            <td><textarea name="comment" class="w-100">{{ review.comment }}</textarea></td>
         </tr>
 
         {# 来店日 #}
         <tr>
             <td>来店日</td>
-            <td><input type="date" name="visited_date" value="{{ review.visited_date|date:'Y-m-d'}}"></td>
+            <td>{{ review.visited_date }}</td>
         </tr>
 
     </table>
 
-    <input type="submit" value="投稿">
+    <input type="submit" class="btn btn-primary btn-lg d-block mx-auto m-4" value="投稿">
 </form>
+</div>
 
 {% endblock %}

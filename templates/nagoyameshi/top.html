@@ -6,7 +6,7 @@
 <h1 class="page_title">店舗一覧</h1>
 
 
-<div class="container">
+<div class="container pb-5 px-2">
 
 
 {# 店舗リストが空でない場合 #}
@@ -14,14 +14,27 @@
 
     <div class="row">
         {% for restaurant in restaurants %}
-            <div class="col-lg-4">
-            <div class="card h-100" style="width: 18rem;">
-                <img src="{{ restaurant.image.url }}" class="card-img-top" alt="">
+            <div class="col-lg-4  mb-4">
+            <div class="card h-100" style="width: 22rem;">
+                <img src="{{ restaurant.image.url }}" class="card-img-top " alt="">
                 <div class="card-body">
+
+                    {# 店名 #}
                     <h5 class="card-title">{{ restaurant.name }}</h5>
+
+                    {# 星の数 #}
+                    {% include "nagoyameshi/partials/star_average.html" with small=True %}
+
+                    {# 予算 #}
+                    <p>{{ restaurant.floor_price }} ~ {{ restaurant.maximum_price }} 円</p>
+
+                    {# 説明文 #}
                     <p class="card-text">{{ restaurant.description }}</p>
-                    <a href="{% url "nagoyameshi:restaurant_detail" pk=restaurant.pk%}" class="btn btn-secondary">もっと見る</a>
+
+                    <a href="{% url "nagoyameshi:restaurant_detail" pk=restaurant.pk%}" class="btn btn-link">もっと見る</a>
                 </div>
+
+                
             </div>
             </div>
         {% endfor %}

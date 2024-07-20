@@ -22,9 +22,10 @@ class Category(ExtendedModel):
     def __str__(self):
         return self.name
 
-# 曜日
+# 曜日　整数値は月曜日か0で日曜日が6。
 class Day(models.Model):
     name = models.CharField(verbose_name='曜日', max_length=10)
+    key = models.PositiveIntegerField(verbose_name='整数値', default=0)
 
     def __str__(self):
         return self.name
@@ -171,6 +172,11 @@ class Reservation(ExtendedModel):
         reservation_datetime = self.reservation_datetime.time()
         if  not restaurant.opening_time <= reservation_datetime < restaurant.closing_time:
             raise ValidationError('予約時刻は営業時間内で指定してください。')
+        
+        # 定休日の予約の場合エラーを返す
+        weekday = self.reservation_datetime.weekday()
+        if restaurant.regular_closing_day.filter(key=weekday).exists():
+            raise ValidationError('定休日に予約することはできません。別の曜日を選択してください。')
         
         # 前後2時間に別の店舗を予約している場合エラーを返す
         start = self.reservation_datetime - timedelta(hours=2)
