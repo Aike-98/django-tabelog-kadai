@@ -95,16 +95,14 @@
     {# アイテム #}
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <div class="bg-light w-100 d-flex align-items-center">
-                <img src="{{ restaurant.image.url }}" class="d-block img-fluid mx-auto" alt="...">
-            </div>
+            
+            <img src="{{ restaurant.image.url }}" class="d-block w-100 .object-fit-cover" alt="...">
+            
         </div>
 
         {% for photo in photos %}
         <div class="carousel-item">
-            <div class="bg-light w-100 d-flex align-items-center">
-                <img src="{{ photo.image.url }}" class="d-block img-fluid mx-auto" alt="...">
-            </div>
+            <img src="{{ photo.image.url }}" class="d-block w-100 .object-fit-cover" alt="...">
         </div>
         {% endfor %}
     </div>

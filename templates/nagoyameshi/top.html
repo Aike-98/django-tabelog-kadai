@@ -15,9 +15,10 @@
     <div class="row">
         {% for restaurant in restaurants %}
             <div class="col-lg-4  mb-4">
-            <div class="card h-100" style="width: 22rem;">
-                <img src="{{ restaurant.image.url }}" class="card-img-top " alt="">
-                <div class="card-body">
+            <a href="{% url "nagoyameshi:restaurant_detail" pk=restaurant.pk%}" class="text-dark">
+            <div class="card" style="width: 22rem; height: 31rem">
+                <img src="{{ restaurant.image.url }}" class="card-img-top h-50" alt="">
+                <div class="card-body position-relative">
 
                     {# 店名 #}
                     <h5 class="card-title">{{ restaurant.name }}</h5>
@@ -31,11 +32,11 @@
                     {# 説明文 #}
                     <p class="card-text">{{ restaurant.description }}</p>
 
-                    <a href="{% url "nagoyameshi:restaurant_detail" pk=restaurant.pk%}" class="btn btn-link">もっと見る</a>
                 </div>
 
                 
             </div>
+            </a>
             </div>
         {% endfor %}
     </div>

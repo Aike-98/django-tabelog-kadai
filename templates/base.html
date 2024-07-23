@@ -34,12 +34,14 @@
 
             {# ロゴ #}
             <a href="{% url 'nagoyameshi:index'%}" class="navbar-brand">
-                <img src="{% static 'nagoyameshi/img/logo.png'%}" alt="ロゴ" class="img-fluid">
-                <span>NAGOYAMESHI</span>
+                <img src="{% static 'nagoyameshi/img/logo.png'%}" alt="ロゴ" class="">
+                <p class="m-0">NAGOYAMESHI</p>
             </a>
 
             {# 検索フォーム #}
             <form action="{% url 'nagoyameshi:top' %}" method="GET" id="search_form" class="">
+
+
                 <select name="category" id="" value="{{ request.GET.category }}" class="h-100">
                     <option value="">全て</option>
                     {% for category in CATEGORIES_LIST %}
@@ -49,15 +51,10 @@
                     {% endfor %}
                 </select>
                 <input type="text" name="keyword" value="{{ request.GET.keyword }}" class="h-100" placeholder="店名検索">
+                <input type="number" name="floor_price" value="{{ request.GET.floor_price}}" class="h-100" placeholder="予算下限">
+                <input type="number" name="maximum_price" value="{{ request.GET.maximum_price}}" class="h-100" placeholder="予算上限">
                 <button type="submit" class="btn h-100"><i class="fas fa-search"></i></button>
-
-                <br>
-
-                <details>
-                    <summary>予算を設定</summary>
-                    下限：<input type="number" name="floor_price" value="{{ request.GET.floor_price}}">
-                    上限：<input type="number" name="maximum_price" value="{{ request.GET.maximum_price}}">
-                </details>
+ 
             </form>
 
             {# navigation #}

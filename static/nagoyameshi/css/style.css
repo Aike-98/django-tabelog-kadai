@@ -12,12 +12,14 @@ base.htmlに適用するデザイン
 }
 :root .btn-primary{
     background-color: var(--accent-color);
+    border: none;
 }
 :root .btn-primary:hover{
     background-color: var(--sub-color-2);
 }
 :root .btn-secondary{
     background-color: var(--sub-color-2);
+    border: none;
 }
 :root .btn-secondary:hover{
     background-color: var(--sub-color-1);
@@ -32,20 +34,25 @@ header{
     align-items: center;
     justify-content: space-between;
 }
-.navbar-brand > img{
-    width:40px;
+.navbar-brand{
+    display: flex;
+    flex-direction: row;
     align-items: center;
 }
-.navbar-brand > span{
+.navbar-brand > img{
+    width:40px;
+    margin: 5px;
+}
+.navbar-brand > p{
     color: var(--main-color);
-    font-size: 2rem;
+    font-size: 32px;
     font-family: "Train One", system-ui;
     font-weight: 500;
     font-style: normal;
 }
 #search_form{
-    height:100%;
-    padding: 15px 20px 15px 0;
+    height:60px;
+    padding: 10px 20px 10px 0;
     display:flex;
     flex-direction: row;
 }
@@ -58,10 +65,19 @@ header{
     background-color: var(--main-color);
     border-radius: 10% 0 0 10%;
     border-right: 2px solid gray;
+    padding-left: 5px;
 }
 #search_form > input[type="text"]{
     width: 300px;
     background-color: var(--main-color);
+    border-right: 2px solid gray;
+    padding-left: 5px;
+}
+#search_form > input[type="number"]{
+    width: 100px;
+    background-color: var(--main-color);
+    border-right: 2px solid gray;
+    padding-left: 5px;
 }
 #search_form > button{
     background-color: var(--accent-color);
@@ -249,17 +265,12 @@ restaurant_detail.htmlに適用するデザイン
 }
 
 #restaurantDetailCarousel{
+    position: relative;
     max-width: 600px;
     height:28rem;
 }
 .carousel_container{
     margin-bottom: 8rem;
-}
-#restaurantDetailCarousel .carousel-item > div{
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 28rem;
 }
 #restaurantDetailCarousel .carousel-indicators{
     bottom: -4rem;
@@ -276,9 +287,5 @@ restaurant_detail.htmlに適用するデザイン
     height: 100%;
 }
 
-.star_avg{
-    font-size: 2rem;
-    width: 20rem;
-    height: 2rem;
-}
+
   
