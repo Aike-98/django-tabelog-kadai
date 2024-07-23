@@ -170,7 +170,7 @@ if not DEBUG:
     ALLOWED_HOSTS = []
 
 
-    SECRET_KEY = os.environ["SECRETKEY"]
+    SECRET_KEY = os.environ["SECRET_KEY"]
     
     # 静的ファイル配信ミドルウェア、whitenoiseを使用。※ 順番不一致だと動かないため下記をそのままコピーする。
     MIDDLEWARE = [ 
