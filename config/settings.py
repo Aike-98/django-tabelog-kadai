@@ -11,26 +11,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from .secretkey import *
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h9pm3u+qf5b9^zr4p7_zu0w0&8gpymyxfx*=#d=1!rm&2xex-l'
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# デバッグモード
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,18 +36,29 @@ INSTALLED_APPS = [
 ]
 
 
+# 環境変数の読み込み
+if DEBUG:
+    load_dotenv()
+SECRET_KEY = os.environ['SECRET_KEY']
+
+# stripe
+STRIPE_API_KEY          = os.environ['STRIPE_API_KEY']
+STRIPE_PUBLISHABLE_KEY  = os.environ['STRIPE_PUBLISHABLE_KEY']
+STRIPE_PRICE_ID         = os.environ['STRIPE_PRICE_ID']
+
 # DEBUGがTrueのとき、メールの内容はすべて端末に表示させる
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'sendgrid_backend.SendGridBackend'
-    DEFAULT_FROM_EMAIL  = "example@example.com" # Sendgrid送信用のメールアドレス。
-    SENDGRID_API_KEY    = "ここにsendgridのAPIkeyを記述する" # 環境変数でも可
-    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    # EMAIL_BACKEND = 'sendgrid_backend.SendGridBackend'
+    DEFAULT_FROM_EMAIL  = "example@example.com"
+    # SENDGRID_API_KEY    = "ここにsendgridのAPIkeyを記述する" # 環境変数でも可
+    # SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
+# ログイン設定
 LOGIN_REDIRECT_URL  = "nagoyameshi:top"
-LOGOUT_REDIRECT_URL = "login" # urls.pyのnameを参照している。
-
+LOGOUT_REDIRECT_URL = "login"
 AUTH_USER_MODEL = 'accounts.CustomUser'
 ACCOUNT_FORMS   = { "signup":"accounts.forms.SignupForm"}
 
@@ -138,7 +141,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+if DEBUG:
+    STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 
 # Media files
 MEDIA_URL   = "/media/"
@@ -149,3 +153,70 @@ MEDIA_ROOT  = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+# === settings for production === #
+
+if not DEBUG:
+
+    #INSTALLED_APPSにcloudinaryの追加
+    INSTALLED_APPS.append('cloudinary')
+    INSTALLED_APPS.append('cloudinary_storage')
+
+    # ALLOWED_HOSTSにホスト名)を入力
+    ALLOWED_HOSTS = [ os.environ["HOST"] ]
+
+    SECRET_KEY = os.environ["SECRETKEY"]
+    
+    # 静的ファイル配信ミドルウェア、whitenoiseを使用。※ 順番不一致だと動かないため下記をそのままコピーする。
+    MIDDLEWARE = [ 
+        'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        ]
+
+    # 静的ファイル(static)の存在場所を指定する。
+    STATIC_ROOT = BASE_DIR / 'static'
+
+    # DBの設定
+    DATABASES = { 
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME'    : os.environ["DB_NAME"],
+                'USER'    : os.environ["DB_USER"],
+                'PASSWORD': os.environ["DB_PASSWORD"],
+                'HOST'    : os.environ["DB_HOST"],
+                'PORT': '5432',
+                }
+            }
+
+    #DBのアクセス設定
+    import dj_database_url
+
+    db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+    DATABASES['default'].update(db_from_env)
+    
+
+    #cloudinaryの設定
+    CLOUDINARY_STORAGE = { 
+            'CLOUD_NAME': os.environ["CLOUD_NAME"], 
+            'API_KEY'   : os.environ["API_KEY"], 
+            'API_SECRET': os.environ["API_SECRET"],
+            "SECURE"    : True,
+            }
+
+    #これは画像だけ(上限20MB)
+    #DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+    #これは動画だけ(上限100MB)
+    #DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.VideoMediaCloudinaryStorage'
+
+    #これで全てのファイルがアップロード可能(上限20MB。ビュー側でアップロードファイル制限するなら基本これでいい)
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
