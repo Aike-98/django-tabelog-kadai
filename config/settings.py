@@ -18,7 +18,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # デバッグモード
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
