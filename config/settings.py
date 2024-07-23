@@ -166,7 +166,9 @@ if not DEBUG:
     INSTALLED_APPS.append('cloudinary_storage')
 
     # ALLOWED_HOSTSにホスト名)を入力
-    ALLOWED_HOSTS = [ os.environ["HOST"] ]
+    #ALLOWED_HOSTS = [ os.environ["HOST"] ]
+    ALLOWED_HOSTS = []
+
 
     SECRET_KEY = os.environ["SECRETKEY"]
     
