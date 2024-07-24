@@ -167,7 +167,7 @@ if not DEBUG:
 
     # ALLOWED_HOSTSにホスト名)を入力
     #ALLOWED_HOSTS = [ os.environ["HOST"] ]
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = [ os.environ["ALLOWED_HOSTS"] ]
 
 
     SECRET_KEY = os.environ["SECRET_KEY"]
