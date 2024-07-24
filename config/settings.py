@@ -47,14 +47,21 @@ STRIPE_PUBLISHABLE_KEY  = os.environ['STRIPE_PUBLISHABLE_KEY']
 STRIPE_PRICE_ID         = os.environ['STRIPE_PRICE_ID']
 
 # DEBUGがTrueのとき、メールの内容はすべて端末に表示させる
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    # EMAIL_BACKEND = 'sendgrid_backend.SendGridBackend'
-    DEFAULT_FROM_EMAIL  = "example@example.com"
-    # SENDGRID_API_KEY    = "ここにsendgridのAPIkeyを記述する" # 環境変数でも可
-    # SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#     EMAIL_BACKEND = 'sendgrid_backend.SendGridBackend'
+#     DEFAULT_FROM_EMAIL  = "example@example.com"
+#     SENDGRID_API_KEY    = "ここにsendgridのAPIkeyを記述する"
+#     SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 # ログイン設定
 LOGIN_REDIRECT_URL  = "nagoyameshi:top"
@@ -222,3 +229,11 @@ if not DEBUG:
 
     #これで全てのファイルがアップロード可能(上限20MB。ビュー側でアップロードファイル制限するなら基本これでいい)
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
+
+    # mail
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
