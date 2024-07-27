@@ -47,21 +47,9 @@ STRIPE_PUBLISHABLE_KEY  = os.environ['STRIPE_PUBLISHABLE_KEY']
 STRIPE_PRICE_ID         = os.environ['STRIPE_PRICE_ID']
 
 # DEBUGがTrueのとき、メールの内容はすべて端末に表示させる
-# if DEBUG:
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# else:
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#     EMAIL_BACKEND = 'sendgrid_backend.SendGridBackend'
-#     DEFAULT_FROM_EMAIL  = "example@example.com"
-#     SENDGRID_API_KEY    = "ここにsendgridのAPIkeyを記述する"
-#     SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 # ログイン設定
 LOGIN_REDIRECT_URL  = "nagoyameshi:top"
@@ -173,7 +161,6 @@ if not DEBUG:
     INSTALLED_APPS.append('cloudinary_storage')
 
     # ALLOWED_HOSTSにホスト名)を入力
-    #ALLOWED_HOSTS = [ os.environ["HOST"] ]
     ALLOWED_HOSTS = [ os.environ["ALLOWED_HOSTS"] ]
 
 
@@ -221,13 +208,8 @@ if not DEBUG:
             "SECURE"    : True,
             }
 
-    #これは画像だけ(上限20MB)
-    #DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-    #これは動画だけ(上限100MB)
-    #DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.VideoMediaCloudinaryStorage'
-
-    #これで全てのファイルがアップロード可能(上限20MB。ビュー側でアップロードファイル制限するなら基本これでいい)
+    #全てのファイルがアップロード可能(上限20MB。ビュー側でアップロードファイル制限するなら基本これでいい)
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
 
     # mail

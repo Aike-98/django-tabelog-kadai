@@ -22,12 +22,6 @@ class RestaurantAdmin(admin.ModelAdmin):
     search_fields = ('name', )
     list_filter = ('category_id', )
 
-    # def get_regular_closing_day(self, obj):
-    #     return "\n".join([day.name for day in obj.regular_closing_day.all()])
-    
-    # def image(self, obj):
-    #     return mark_safe('<img scr="{}" style="width:100px height:auto;">'.format(obj.thumbnail.url))
-
 admin.site.register(Restaurant, RestaurantAdmin)
 
 # 店舗画像（詳細）

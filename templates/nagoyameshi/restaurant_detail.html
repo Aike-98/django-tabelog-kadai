@@ -15,23 +15,6 @@
 
     <a href="{% url 'nagoyameshi:review_list' pk=restaurant.pk %}" class="d-block ml-5">
         <p class="ml-2">レビュー（ {{ restaurant.count_reviews }} 件）</p>
-    
-        {% comment %} <div class="star_avg d-flex flex-direction-row align-items-center">
-            {% for x in restaurant.stars_avg_str.true_star %}
-                <p class="fa-solid fa-star text-warning"></p>
-            {% endfor %}
-
-            {% for x in restaurant.stars_avg_str.half_star %}
-                <p class="position-relative">
-                    <i class="fa-solid fa-star-half text-warning z-0 position-absolute d-inline"></i>
-                </p>
-                <p class="fa-solid fa-star text-muted"></p>
-            {% endfor %}
-
-            {% for x in restaurant.stars_avg_str.false_star %}
-                <p class="fa-solid fa-star text-muted"></p>
-            {% endfor %}
-        </div>  {% endcomment %}
 
         {% include "nagoyameshi/partials/star_average.html" %}
 

@@ -63,7 +63,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
 
     # メールアドレスを使ってログインさせる。(管理ユーザーも)
-    #USERNAME_FIELD = 'username'
     USERNAME_FIELD = 'email'
 
     REQUIRED_FIELDS = [ "username" ]
@@ -71,7 +70,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        #abstract = True #←このabstractをコメントアウトする
 
     def clean(self):
         super().clean()

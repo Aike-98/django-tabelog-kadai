@@ -131,8 +131,6 @@ class TopView(LoginRequiredMixin, View):
         # リクエストから検索条件を取得
         keyword = request.GET.get('keyword')
         selected_category = request.GET.get('category')
-        # floor_price = request.GET.get('floor_price')
-        # maximum_price = request.GET.get('maximum_price')
 
         # 検索キーワードがある場合、検索条件を追加
         if keyword:
